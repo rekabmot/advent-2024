@@ -21,6 +21,8 @@ data class Vec2(val x: Int, val y: Int) {
         )
     }
 
-    fun add(other: Vec2): Vec2 = Vec2(this.x + other.x, this.y + other.y)
+    operator fun plus(other: Vec2) = Vec2(this.x + other.x, this.y + other.y)
+    operator fun minus(other: Vec2) = Vec2(this.x - other.x, this.y - other.y)
+    operator fun times(factor: Int) = Vec2(this.x * factor, this.y * factor)
 }
 

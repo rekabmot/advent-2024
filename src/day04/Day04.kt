@@ -32,7 +32,7 @@ fun findWord(grid: List<String>, pos: Vec2, dir: Vec2, current: Int): Boolean {
     if (grid[pos.y][pos.x] != WORD[current]) return false
     if (current == WORD.length - 1) return true
 
-    return findWord(grid, pos.add(dir), dir, current + 1)
+    return findWord(grid, pos + dir, dir, current + 1)
 }
 
 fun part2(input: List<String>) {

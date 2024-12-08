@@ -43,13 +43,9 @@ fun main() {
 
     val p2 = invalidOrderings.map {
         it.sortedWith { a, b ->
-            if (afterRules.getOrDefault(a, mutableListOf()).contains(b)) {
-                -1
-            } else if (beforeRules.getOrDefault(a, mutableListOf()).contains(b)) {
-                1
-            } else {
-                0
-            }
+            if (afterRules.getOrDefault(a, mutableListOf()).contains(b)) -1
+            else if (beforeRules.getOrDefault(a, mutableListOf()).contains(b)) 1
+            else 0
         }
     }.sumOf { it[it.size / 2] }
 
