@@ -26,3 +26,9 @@ data class Vec2(val x: Int, val y: Int) {
     operator fun times(factor: Int) = Vec2(this.x * factor, this.y * factor)
 }
 
+data class Vec2L(val x: Long, val y: Long) {
+    operator fun plus(other: Vec2L) = Vec2L(this.x + other.x, this.y + other.y)
+    operator fun minus(other: Vec2L) = Vec2L(this.x - other.x, this.y - other.y)
+    operator fun times(factor: Long) = Vec2L(this.x * factor, this.y * factor)
+}
+

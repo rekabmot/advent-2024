@@ -51,12 +51,10 @@ fun main() {
 
         val sides = countSides(region) + findSubRegions(region).sumOf { countSides(it) }
 
-//        findSubRegions(region)
-
         return Pair(area * perimeter, area * sides)
     }
 
-    val p1 = yRange.fold(Pair(0, 0)) { yAcc, y ->
+    val answers = yRange.fold(Pair(0, 0)) { yAcc, y ->
         val yResult = xRange.fold(Pair(0, 0)) { xAcc, x ->
             if (!visited.contains(Vec2(x, y))) {
                 val xResult = exploreRegion(Vec2(x, y))
@@ -68,7 +66,8 @@ fun main() {
         Pair(yAcc.first + yResult.first, yAcc.second + yResult.second)
     }
 
-    println(p1)
+    println(answers.first)
+    println(answers.second)
 }
 
 fun countSides(region: List<Vec2>): Int {
@@ -118,10 +117,9 @@ fun findSubRegions(region: List<Vec2>): List<List<Vec2>> {
         }
     }
 
-    val floodBorder = mutableMapOf<Int, MutableSet<Int>>()
+    val floodBorder = mutableListOf<Vec2>()
 
     val frontier = mutableListOf(Vec2(0, 0))
-    val visited = mutableMapOf<Int, MutableSet<Int>>()
 
     val yRange = borderedGrid.indices
     val xRange = borderedGrid.first().indices
@@ -129,17 +127,14 @@ fun findSubRegions(region: List<Vec2>): List<List<Vec2>> {
     while (frontier.isNotEmpty()) {
         val current = frontier.removeAt(0)
 
-        visited.getOrPut(current.y) { mutableSetOf() }.add(current.x)
-
-        floodBorder.getOrPut(current.y) { mutableSetOf() }.add(current.x)
+        floodBorder.add(current)
 
         Vec2.CARDINAL_DIRECTIONS.forEach {
             val newPos = current + it
             if (xRange.contains(newPos.x) && yRange.contains(newPos.y)
-                && !(floodBorder.containsKey(newPos.y) && floodBorder.getValue(newPos.y)
-                    .contains(newPos.x)) && borderedGrid[newPos.y][newPos.x] == 0
-                && !(visited.containsKey(newPos.y) && visited.getValue(newPos.y).contains(newPos.x))
+                && !floodBorder.contains(newPos)
                 && !frontier.contains(newPos)
+                && borderedGrid[newPos.y][newPos.x] == 0
             ) {
                 frontier.add(newPos)
             }
@@ -148,20 +143,29 @@ fun findSubRegions(region: List<Vec2>): List<List<Vec2>> {
 
     val floodedGrid = (0..(yMax - yMin) + 2).map { y ->
         (0..(xMax - xMin) + 2).map { x ->
-            if (offsetRegion.contains(Vec2(x, y)) || floodBorder.getValue(y).contains(x)) {
-                '#'
+            if (offsetRegion.contains(Vec2(x, y)) || floodBorder.contains(Vec2(x, y))) {
+                1
             } else {
-                '.'
+                0
             }
         }
     }
 
+    return getSubRegions(yRange, xRange, floodedGrid)
+}
+
+private fun getSubRegions(
+    yRange: IntRange,
+    xRange: IntRange,
+    floodedGrid: List<List<Int>>,
+): List<List<Vec2>> {
     val processedPositions = mutableListOf<Vec2>()
+
     val subRegions = mutableListOf<List<Vec2>>()
 
     yRange.forEach { y ->
         xRange.forEach { x ->
-            if (floodedGrid[y][x] == '.' && !processedPositions.contains(Vec2(x, y))) {
+            if (floodedGrid[y][x] == 0 && !processedPositions.contains(Vec2(x, y))) {
 
                 val newRegion = mutableListOf<Vec2>()
                 val newRegionFrontier = mutableListOf(Vec2(x, y))
@@ -174,7 +178,7 @@ fun findSubRegions(region: List<Vec2>): List<List<Vec2>> {
                     Vec2.CARDINAL_DIRECTIONS.forEach {
                         val newPos = current + it
                         if (xRange.contains(newPos.x) && yRange.contains(newPos.y)
-                            && borderedGrid[newPos.y][newPos.x] == 0 && !processedPositions.contains(newPos)
+                            && floodedGrid[newPos.y][newPos.x] == 0 && !processedPositions.contains(newPos)
                         ) {
                             newRegionFrontier.add(newPos)
                         }
@@ -185,6 +189,5 @@ fun findSubRegions(region: List<Vec2>): List<List<Vec2>> {
             }
         }
     }
-
     return subRegions
 }
