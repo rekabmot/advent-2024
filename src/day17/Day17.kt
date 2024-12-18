@@ -7,6 +7,7 @@ const val DEFAULT_MOVE = 2
 
 class Computer(private var a: Long, private var b: Long, private var c: Long, val input: List<Long>) {
     private var instuctionPointer = 0
+    private var output = mutableListOf<Int>()
 
     private val instructions = mapOf(
         0L to { operand: Long -> adv(resolveComboOperand(operand)) },
@@ -19,14 +20,15 @@ class Computer(private var a: Long, private var b: Long, private var c: Long, va
         7L to { operand: Long -> cdv(resolveComboOperand(operand)) }
     )
 
-    fun run() {
+
+
+    fun run(): String {
         while (instuctionPointer < input.size) {
             val result = instructions.getValue(input[instuctionPointer]).invoke(input[instuctionPointer + 1])
             instuctionPointer += result
         }
-        println()
-        println(toString())
-        println()
+
+        return output.joinToString(",")
     }
 
     private fun resolveComboOperand(operand: Long): Long = when(operand) {
@@ -70,7 +72,7 @@ class Computer(private var a: Long, private var b: Long, private var c: Long, va
     }
 
     private fun out(operand: Long): Int {
-        print("${operand.mod(8)},")
+        output.add(operand.mod(8))
         return DEFAULT_MOVE
     }
 
@@ -94,13 +96,23 @@ fun main() {
         .filter { it.isNotEmpty() }
         .map { it.split(": ")[1] }
 
-    Computer(0, 0, 9, listOf(2, 6)).run() // Set B to 1
-    Computer(10, 0, 0, listOf(5, 0, 5, 1, 5, 4)).run() // Print 0,1,2
-    Computer(2024, 0, 0, listOf(0, 1, 5, 4, 3, 0)).run() // Print 4,2,5,6,7,7,7,7,3,1,0, leave 0 in A
-    Computer(0, 29, 0, listOf(1, 7)).run() // Set B to 26
-    Computer(0, 2024, 43690, listOf(4, 0)).run() // Set B to 44354
+//    Computer(0, 0, 9, listOf(2, 6)).run() // Set B to 1
+//    Computer(10, 0, 0, listOf(5, 0, 5, 1, 5, 4)).run() // Print 0,1,2
+//    Computer(2024, 0, 0, listOf(0, 1, 5, 4, 3, 0)).run() // Print 4,2,5,6,7,7,7,7,3,1,0, leave 0 in A
+//    Computer(0, 29, 0, listOf(1, 7)).run() // Set B to 26
+//    Computer(0, 2024, 43690, listOf(4, 0)).run() // Set B to 44354
 
 
     val computer = Computer(input[0].toLong(), input[1].toLong(), input[2].toLong(), input[3].split(",").map { it.toLong() })
-    computer.run()
+    val p1 = computer.run()
+
+    println(p1)
+
+    repeat(100) {
+        val x = Computer((it * 1000).toLong(),0, 0, listOf(0,3,5,4,3,0) ).run()
+        println(x)
+    }
+
+    val x = Computer(117440,0, 0, listOf(0,3,5,4,3,0) ).run()
+    println(x)
 }
