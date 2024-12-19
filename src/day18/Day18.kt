@@ -2,7 +2,6 @@ package day18
 
 import utils.Vec2
 import utils.readInput
-import kotlin.time.measureTime
 
 const val GRID_SIZE = 70
 const val FALLEN_BYTES = 1024
@@ -74,18 +73,4 @@ fun solve(corruptedSpaces: Set<Vec2>): List<Vec2> {
         }
     }
     return mutableListOf()
-}
-
-fun drawGrid(corruptedSpaces: List<Vec2>, path: List<Vec2>) {
-    (0..GRID_SIZE).map { y ->
-        (0..GRID_SIZE).map { x ->
-            if (path.contains(Vec2(x, y))) {
-                'O'
-            } else if (corruptedSpaces.contains(Vec2(x, y))) {
-                '#'
-            } else {
-                '.'
-            }
-        }.joinToString("")
-    }.forEach { println(it) }
 }
