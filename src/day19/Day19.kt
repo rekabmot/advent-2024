@@ -16,10 +16,8 @@ fun main() {
 fun canMakePattern(pattern: String, towels: List<String>): Boolean =
     pattern.isEmpty() || towels.any { pattern.startsWith(it) && canMakePattern(pattern.drop(it.length), towels) }
 
-fun countPossibilities(pattern: String, towels: List<String>): Long {
-    if (pattern.isEmpty()) return 1
-
-    return towels.filter { pattern.startsWith(it) }.fold(0L) { acc, next ->
-        acc + cache.getOrPut(pattern.drop(next.length)) { countPossibilities(pattern.drop(next.length), towels) }
-    }
+fun countPossibilities(pattern: String, towels: List<String>): Long = if (pattern.isEmpty())
+    1
+else towels.filter { pattern.startsWith(it) }.fold(0L) { acc, next ->
+    acc + cache.getOrPut(pattern.drop(next.length)) { countPossibilities(pattern.drop(next.length), towels) }
 }
