@@ -23,25 +23,23 @@ fun main() {
 
     println(p1.size)
 
-    val p2 = explore(setOf(), connections.keys, setOf(), connections)
+    // Bron-Kerbosch Algorithm
+    fun explore(currentSet: Set<String>, candidateSet: List<String>, exclusionSet: List<String>): Set<String> {
+        if (candidateSet.isEmpty() && exclusionSet.isEmpty()) return currentSet
 
+        val candidates = candidateSet.toMutableSet()
+        val exclusions = exclusionSet.toMutableSet()
+
+        return candidateSet.map { c ->
+            val neighbours = connections.getValue(c)
+
+            val r = explore(currentSet + c, candidates.filter { neighbours.contains(it) }, exclusions.filter { neighbours.contains(it) })
+            candidates.remove(c)
+            exclusions.add(c)
+            r
+        }.maxByOrNull { it.size } ?: setOf()
+    }
+
+    val p2 = explore(setOf(), connections.keys.toList(), listOf())
     println(p2.sorted().joinToString(","))
 }
-
-// Bron-Kerbosch Algorithm
-fun explore(currentSet: Set<String>, candidateSet: Set<String>, exclusionSet: Set<String>, connections: Map<String, Set<String>>): Set<String> {
-    if (candidateSet.isEmpty() && exclusionSet.isEmpty()) return currentSet
-
-    val candidates = candidateSet.toMutableSet()
-    val exclusions = exclusionSet.toMutableSet()
-
-    return candidateSet.map {
-        val neighbours = connections.getValue(it)
-
-        val r = explore(currentSet + setOf(it), candidates.filter { c -> neighbours.contains(c) }.toSet(), exclusions.filter { x -> neighbours.contains(x) }.toSet(), connections)
-        candidates.remove(it)
-        exclusions.add(it)
-        r
-    }.maxByOrNull { it.size } ?: setOf()
-}
-
